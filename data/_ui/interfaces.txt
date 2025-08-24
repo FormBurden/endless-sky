@@ -1275,6 +1275,14 @@ interface "hud"
 	point "mini-map"
 		center 0 100
 
+	anchor bottom center
+	button y "_Mine!!!"
+		center 0 0
+		dimensions 120 30
+		color medium
+		hover bright
+
+
 
 
 interface "main view"

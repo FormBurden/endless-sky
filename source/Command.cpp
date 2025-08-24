@@ -86,7 +86,7 @@ const Command Command::AUTOSTEER(ONE << 35, "Auto steer");
 const Command Command::WAIT(ONE << 36, "");
 const Command Command::STOP(ONE << 37, "");
 const Command Command::SHIFT(ONE << 38, "");
-
+const Command Command::MINE(ONE << 39, "Fleet: Mine");
 
 
 // In the given text, replace any instances of command names (in angle brackets)
@@ -155,7 +155,13 @@ void Command::LoadSettings(const filesystem::path &path)
 			keyName[command] = SDL_GetKeyName(keycode);
 		}
 	}
-
+	// Ensure a default binding for Fleet: Mine if not present.
+	if(!keycodeForCommand.count(Command::MINE)) {
+		const int keycode = SDLK_y;
+		keycodeForCommand[Command::MINE] = keycode;
+		keyName[Command::MINE] = SDL_GetKeyName(keycode);
+	}
+	// Regenerate the lookup tables.
 	// Regenerate the lookup tables.
 	commandForKeycode.clear();
 	keycodeCount.clear();
@@ -288,6 +294,7 @@ void Command::Load(const DataNode &node)
 			{"fight", Command::FIGHT},
 			{"gather", Command::GATHER},
 			{"hold", Command::HOLD},
+			{"mine", Command::MINE},
 			{"ammo", Command::AMMO},
 			{"nearest asteroid", Command::NEAREST_ASTEROID},
 			{"wait", Command::WAIT},

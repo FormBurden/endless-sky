@@ -565,6 +565,36 @@ void AI::UpdateKeys(PlayerInfo &player, const Command &activeCommands)
 	}
 	else if(activeCommands.Has(Command::FIGHT) && !shift && targetAsteroid)
 		IssueAsteroidTarget(targetAsteroid);
+	// Fleet mining command (Y): order escorts to mine the targeted (or nearest) minable asteroid.
+	if(activeCommands.Has(Command::MINE) && !shift)
+	{
+		// If the flagship already has an asteroid targeted, mine that.
+		if(targetAsteroid)
+		{
+			IssueAsteroidTarget(targetAsteroid);
+		}
+		else
+		{
+			// Try to auto-select a nearby minable asteroid, then mine it.
+			if(auto flagshipPtr = player.FlagshipPtr())
+			{
+				if(TargetMinable(*flagshipPtr))
+				{
+					auto autoAst = flagshipPtr->GetTargetAsteroid();
+					if(autoAst)
+						IssueAsteroidTarget(autoAst);
+					else
+						Messages::Add("No minable asteroid in range.", Messages::Importance::Low);
+				}
+				else
+				{
+					Messages::Add("No minable asteroid in range.", Messages::Importance::Low);
+				}
+			}
+		}
+	}
+
+
 	if(activeCommands.Has(Command::HOLD) && !shift)
 	{
 		newOrders.type = Orders::HOLD_POSITION;
@@ -4981,13 +5011,34 @@ void AI::IssueOrders(const Orders &newOrders, const string &description)
 		who = (ships.empty() ? destroyedCount : ships.size()) > 1
 			? "The selected escorts are " : "The selected escort is ";
 	}
-	if(ships.empty())
-	{
-		if(destroyedCount)
-			Messages::Add(who + "destroyed and unable to execute your orders.",
-				Messages::Importance::High);
-		return;
-	}
+    // Restrict mining orders to escorts with an Asteroid Scanner.
+    if(newOrders.type == Orders::MINE) {
+        vector<const Ship *> filtered;
+        filtered.reserve(ships.size());
+        for(const Ship *s : ships) {
+            if(s->Attributes().Get("asteroid scan power") > 0.)
+                filtered.push_back(s);
+        }
+        ships.swap(filtered);
+    }
+
+    if(ships.empty()) {
+        if(newOrders.type == Orders::MINE && destroyedCount == 0) {
+            Messages::Add("No eligible escorts with an Asteroid Scanner to mine.", Messages::Importance::High);
+        } else if(destroyedCount) {
+            Messages::Add(who + "destroyed and unable to execute your orders.", Messages::Importance::High);
+        }
+        return;
+    }
+
+
+	// if(ships.empty())
+	// {
+	// 	if(destroyedCount)
+	// 		Messages::Add(who + "destroyed and unable to execute your orders.",
+	// 			Messages::Importance::High);
+	// 	return;
+	// }
 
 	Point centerOfGravity;
 	bool isMoveOrder = (newOrders.type == Orders::MOVE_TO);

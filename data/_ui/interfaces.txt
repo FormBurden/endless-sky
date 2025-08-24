@@ -1275,12 +1275,21 @@ interface "hud"
 	point "mini-map"
 		center 0 100
 
+	anchor top
+	point "mini-map"
+		center 0 100
+
 	anchor bottom center
-	button y "_Mine!!!"
-		center 0 0
-		dimensions 120 30
-		color medium
-		hover bright
+	box "mine hint"
+			center 0 -58
+			dimensions 160 36
+			color "medium"
+
+	string
+			center 0 -58
+			color "bright"
+			align center
+			text "Mine (Y)"
 
 
 

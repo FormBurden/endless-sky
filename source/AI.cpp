@@ -543,7 +543,12 @@ void AI::UpdateKeys(PlayerInfo &player, const Command &activeCommands)
 
 	// The commands below here only apply if you have escorts or fighters.
 	if(player.Ships().size() < 2)
+	{
+		if(activeCommands.Has(Command::MINE))
+			Messages::Add("Mine: no escorts present.", Messages::Importance::Low);
 		return;
+	}
+
 
 	// Toggle the "deploy" command for the fleet or selected ships.
 	if(activeCommands.Has(Command::DEPLOY))
@@ -568,6 +573,8 @@ void AI::UpdateKeys(PlayerInfo &player, const Command &activeCommands)
 	// Fleet mining command (Y): order escorts to mine the targeted (or nearest) minable asteroid.
 	if(activeCommands.Has(Command::MINE) && !shift)
 	{
+		Messages::Add("Mine command pressed.", Messages::Importance::Low);
+
 		// If the flagship already has an asteroid targeted, mine that.
 		if(targetAsteroid)
 		{

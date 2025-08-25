@@ -27,10 +27,10 @@ scons-local*
 .sconsign.dblite
 /*.d
 /vcpkg/
-
+.es-dev-config*
 # Test Reports
 test-report.xml
-
+dev*
 # Generated documentation
 docs/api/
 

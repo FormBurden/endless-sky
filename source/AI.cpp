@@ -509,6 +509,12 @@ void AI::UpdateKeys(PlayerInfo &player, const Command &activeCommands)
 
 	escortsUseAmmo = Preferences::Has("Escorts expend ammo");
 	escortsAreFrugal = Preferences::Has("Escorts use ammo frugally");
+		// DEBUG: show if Mine/Shift are active as soon as UpdateKeys() starts.
+	if(activeCommands.Has(Command::MINE))
+		Messages::Add("DEBUG early: MINE active", Messages::Importance::High);
+	if(activeCommands.Has(Command::SHIFT))
+		Messages::Add("DEBUG early: SHIFT active", Messages::Importance::Low);
+
 
 	if(!autoPilot.Has(Command::STOP) && activeCommands.Has(Command::STOP)
 			&& flagship->Velocity().Length() > VELOCITY_ZERO)
@@ -545,9 +551,11 @@ void AI::UpdateKeys(PlayerInfo &player, const Command &activeCommands)
 	if(player.Ships().size() < 2)
 	{
 		if(activeCommands.Has(Command::MINE))
-			Messages::Add("Mine: no escorts present.", Messages::Importance::Low);
+						Messages::Add("Mine: no escorts present.", Messages::Importance::High);
 		return;
 	}
+
+
 
 
 	// Toggle the "deploy" command for the fleet or selected ships.
@@ -573,7 +581,9 @@ void AI::UpdateKeys(PlayerInfo &player, const Command &activeCommands)
 	// Fleet mining command (Y): order escorts to mine the targeted (or nearest) minable asteroid.
 	if(activeCommands.Has(Command::MINE) && !shift)
 	{
-		Messages::Add("Mine command pressed.", Messages::Importance::Low);
+				Messages::Add("Mine command pressed.", Messages::Importance::High);
+
+
 
 		// If the flagship already has an asteroid targeted, mine that.
 		if(targetAsteroid)

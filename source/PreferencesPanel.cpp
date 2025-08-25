@@ -555,6 +555,7 @@ void PreferencesPanel::DrawControls()
 		Command::HOLD,
 		Command::AMMO,
 		Command::HARVEST,
+		Command::MINE,
 		Command::NONE,
 		Command::NONE,
 		Command::NEAREST,
